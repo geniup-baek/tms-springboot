@@ -130,22 +130,22 @@ public class SingleTableService {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (searchCondition.getId() != null) {
-            builder.and(QSampleSingle.sampleSingle.id.eq(searchCondition.getId()));
+            builder.and(QSingleTableEntity.singleTableEntity.id.eq(searchCondition.getId()));
         }
 
         if (StringUtils.hasText(searchCondition.getRequiredString())) {
-            builder.and(QSampleSingle.sampleSingle.requiredStringField.contains(searchCondition.getRequiredString()));
+            builder.and(QSingleTableEntity.singleTableEntity.requiredStringField.contains(searchCondition.getRequiredString()));
         }
 
         if (StringUtils.hasText(searchCondition.getCode())) {
-            builder.and(QSampleSingle.sampleSingle.codeField.contains(searchCondition.getCode()));
+            builder.and(QSingleTableEntity.singleTableEntity.codeField.contains(searchCondition.getCode()));
         }
 
         List<SingleTableDto> dtoList = new ArrayList<>();
 
         List<SingleTableEntity> resultList = queryFactory
-                .select(QSampleSingle.sampleSingle)
-                .from(QSampleSingle.sampleSingle)
+                .select(QSingleTableEntity.singleTableEntity)
+                .from(QSingleTableEntity.singleTableEntity)
                 .where(builder)
                 .limit(size)
                 .fetch();
