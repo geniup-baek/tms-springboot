@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TmsApplication<tms>",
+            "request": "launch",
+            "mainClass": "com.example.tms.TmsApplication",
+            "projectName": "tms",
+            "console": "internalConsole"
+        }
+    ]
+}

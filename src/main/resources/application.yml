@@ -1,0 +1,29 @@
+server:
+  port: 8600
+
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /tms_db
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:~/tms_db;AUTO_SERVER=TRUE
+    username: tms
+    password: tms
+    # PostgreSQL
+    # driver-class-name: org.postgresql.Driver    
+    # url: jdbc:postgresql://localhost:5432/tms_db
+    # username: tms
+    # password: tms
+
+  jpa:
+    # open-in-view: false
+    show-sql: true
+    # Hibernate ddl auto (create, create-drop, validate, update)
+    hibernate.ddl-auto: update
+    # properties:
+    #   hibernate:
+    #     #format_sql: true
+    #     dialect: org.hibernate.dialect.PostgreSQLDialect
