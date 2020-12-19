@@ -1,6 +1,4 @@
-package com.example.tms.sample.singletable;
-
-import com.example.tms.base.dto.CrudDto;
+package com.example.tms.samplenonextended.singletable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,16 +11,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SingleTableDto implements CrudDto<Long> {
+public class NonExtendedSingleTableDto {
     private Long singleId;
     private String requiredString;
     private String code;
     private String name;
     private Integer version;
     private Boolean deleted;
-
-    @Override
-    public Long getId() {
-        return singleId;
-    }
 }

@@ -1,6 +1,4 @@
-package com.example.tms.sample.familytable;
-
-import com.example.tms.base.dto.CrudDto;
+package com.example.tms.samplenonextended.familytable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChildTableDto implements CrudDto<Long> {
+public class NonExtendedChildTableDto {
     private Long childId;
     private Long nonForeignkeyParentId;
     private String nonForeignkeyParentParentField;
@@ -24,9 +22,4 @@ public class ChildTableDto implements CrudDto<Long> {
     private Boolean deleted;
 
     private String executeType; // C:Create, U:Update, D:Delete
-
-    @Override
-    public Long getId() {
-        return childId;
-    }    
 }

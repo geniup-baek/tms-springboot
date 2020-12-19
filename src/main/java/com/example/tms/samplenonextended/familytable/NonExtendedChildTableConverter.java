@@ -1,16 +1,12 @@
-package com.example.tms.sample.familytable;
-
-import com.example.tms.base.converter.EntityDtoConverter;
+package com.example.tms.samplenonextended.familytable;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class ChildTableConverter 
-        implements EntityDtoConverter<ChildTableEntity, ChildTableDto, Long> {
+public class NonExtendedChildTableConverter {
 
-    @Override
-    public ChildTableEntity fromDto(ChildTableDto dto) {
-        return ChildTableEntity.builder()
+    public NonExtendedChildTableEntity fromDto(NonExtendedChildTableDto dto) {
+        return NonExtendedChildTableEntity.builder()
                 .childId(dto.getChildId())
                 .nonForeignkeyParentId(dto.getNonForeignkeyParentId())
                 // .foreignkeyParent(foreignkeyParent) // set outside
@@ -20,17 +16,15 @@ public class ChildTableConverter
                 .build();
     }
 
-    @Override
-    public ChildTableEntity fromDtoForCreate(ChildTableDto dto) {
-        ChildTableEntity entity = fromDto(dto);
+    public NonExtendedChildTableEntity fromDtoForCreate(NonExtendedChildTableDto dto) {
+        NonExtendedChildTableEntity entity = fromDto(dto);
         entity.setForCreate();
         return entity;
     }
 
-    @Override
-    public ChildTableDto fromEntity(ChildTableEntity entity) {
+    public NonExtendedChildTableDto fromEntity(NonExtendedChildTableEntity entity) {
 
-        ChildTableDto dto = ChildTableDto.builder()
+        NonExtendedChildTableDto dto = NonExtendedChildTableDto.builder()
                 .childId(entity.getChildId())
                 .nonForeignkeyParentId(entity.getNonForeignkeyParentId())
                 .child(entity.getChildField())
@@ -49,8 +43,7 @@ public class ChildTableConverter
         return dto;
     }
 
-    @Override
-    public void mergeEntity(ChildTableEntity target, ChildTableEntity source) {
+    public void mergeEntity(NonExtendedChildTableEntity target, NonExtendedChildTableEntity source) {
         target.setChildId(source.getChildId());
         target.setChildField(source.getChildField());
         target.setNonForeignkeyParentId(source.getNonForeignkeyParentId());

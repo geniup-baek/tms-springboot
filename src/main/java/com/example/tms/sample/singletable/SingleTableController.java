@@ -1,34 +1,17 @@
 package com.example.tms.sample.singletable;
 
-import java.net.URI;
-import java.util.List;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.example.tms.define.Const;
-import com.example.tms.utility.ConvertUtils;
+import com.example.tms.base.BaseService;
+import com.example.tms.base.controller.CrudController;
+import com.example.tms.base.service.CrudService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/sample-singles")
-public class SingleTableController {
-    
+public class SingleTableController implements CrudController<SingleTableEntity, SingleTableDto, SingleTableRepository, SingleTableConverter, SingleTableSearchCondition, Long> {
+
     private SingleTableService service;
 
     @Autowired
@@ -36,71 +19,18 @@ public class SingleTableController {
         this.service = service;
     }
 
-    @PostMapping()
-    public ResponseEntity<Void> create(HttpServletRequest request, @RequestBody SingleTableDto dto) {
-        Long id = service.create(dto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
-        return ResponseEntity.created(location).build();
+    @Override
+    public BaseService getService() {
+        return service;
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SingleTableDto> update(HttpServletRequest request, @PathVariable("id") Long id, @RequestBody SingleTableDto dto) {
-        SingleTableDto updatedDto = service.update(id, dto);
-        return new ResponseEntity<>(updatedDto, HttpStatus.OK);
+    @Override
+    public Class<SingleTableSearchCondition> getSearchControllerType() {
+        return SingleTableSearchCondition.class;
     }
 
-    @DeleteMapping("/{id}:{version}")
-    public ResponseEntity<HttpStatus> delete(HttpServletRequest request, @PathVariable("id") Long id, @PathVariable("version") Integer version) {
-        service.delete(id, version);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @DeleteMapping("/list")
-    public ResponseEntity<HttpStatus> deleteList(HttpServletRequest request, @RequestBody List<SingleTableDto> dtoList) {
-        List<SimpleEntry<Long, Integer>> idVersionList = dtoList.stream()
-                .map(dto -> new SimpleEntry<Long, Integer>(dto.getId(), dto.getVersion()))
-                .collect(Collectors.toList());
-        service.deleteList(idVersionList);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PutMapping("/delete/{id}:{version}")
-    public ResponseEntity<HttpStatus> deleteLogical(HttpServletRequest request, @PathVariable("id") Long id, @PathVariable("version") Integer version) {
-        service.deleteLogical(id, version);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }    
-
-    @PutMapping("/delete-list")
-    public ResponseEntity<HttpStatus> deleteLogicalList(HttpServletRequest request, @RequestBody List<SingleTableDto> dtoList) {
-        List<SimpleEntry<Long, Integer>> idVersionList = dtoList.stream()
-                .map(dto -> new SimpleEntry<Long, Integer>(dto.getId(), dto.getVersion()))
-                .collect(Collectors.toList());
-        service.deleteListLogical(idVersionList);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }    
-
-    @GetMapping()
-    public ResponseEntity<List<SingleTableDto>> search(
-            @RequestParam(required = false) MultiValueMap<String, String> multiValueMap,
-            @RequestParam(defaultValue = Const.SystemConfig.SEARCH_MAX_SIZE_STRING) int size) {
-        
-        SingleTableSearchCondition searchCondition = ConvertUtils.fromMultiValueMap(multiValueMap, SingleTableSearchCondition.class);
-
-        List<SingleTableDto> dtoList = service.search(searchCondition, size);
-
-        return new ResponseEntity<>(dtoList, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SingleTableDto> read(HttpServletRequest request, @PathVariable("id") Long id) {
-        
-        SingleTableDto dto = service.read(id);
-
-        if (dto != null) {
-            return new ResponseEntity<>(dto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @Override
+    public CrudService<SingleTableEntity, SingleTableDto, SingleTableRepository, SingleTableConverter, SingleTableSearchCondition, Long> getCrudService() {
+        return service;
     }
 }

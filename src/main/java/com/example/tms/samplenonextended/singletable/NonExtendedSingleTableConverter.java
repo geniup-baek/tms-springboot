@@ -1,16 +1,12 @@
-package com.example.tms.sample.singletable;
-
-import com.example.tms.base.converter.EntityDtoConverter;
+package com.example.tms.samplenonextended.singletable;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class SingleTableConverter 
-        implements EntityDtoConverter<SingleTableEntity, SingleTableDto, Long> {
+public class NonExtendedSingleTableConverter {
 
-    @Override
-    public SingleTableEntity fromDto(SingleTableDto dto) {
-        return SingleTableEntity.builder()
+    public NonExtendedSingleTableEntity fromDto(NonExtendedSingleTableDto dto) {
+        return NonExtendedSingleTableEntity.builder()
                 .singleId(dto.getSingleId())
                 .requiredStringField(dto.getRequiredString())
                 .codeField(dto.getCode())
@@ -19,16 +15,14 @@ public class SingleTableConverter
                 .build();
     }
 
-    @Override
-    public SingleTableEntity fromDtoForCreate(SingleTableDto dto) {
-        SingleTableEntity entity = fromDto(dto);
+    public NonExtendedSingleTableEntity fromDtoForCreate(NonExtendedSingleTableDto dto) {
+        NonExtendedSingleTableEntity entity = fromDto(dto);
         entity.setForCreate();
         return entity;
     }
 
-    @Override
-    public SingleTableDto fromEntity(SingleTableEntity entity) {
-        return SingleTableDto.builder()
+    public NonExtendedSingleTableDto fromEntity(NonExtendedSingleTableEntity entity) {
+        return NonExtendedSingleTableDto.builder()
                 .singleId(entity.getSingleId())
                 .requiredString(entity.getRequiredStringField())
                 .code(entity.getCodeField())
@@ -38,8 +32,7 @@ public class SingleTableConverter
                 .build();
     }
 
-    @Override
-    public void mergeEntity(SingleTableEntity target, SingleTableEntity source) {
+    public void mergeEntity(NonExtendedSingleTableEntity target, NonExtendedSingleTableEntity source) {
         target.setSingleId(source.getSingleId());
         target.setRequiredStringField(source.getRequiredStringField());
         target.setCodeField(source.getCodeField());

@@ -1,9 +1,7 @@
-package com.example.tms.sample.familytable;
+package com.example.tms.samplenonextended.familytable;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.tms.base.dto.CrudDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +14,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParentTableDto implements CrudDto<Long> {
+public class NonExtendedParentTableDto {
 
     private Long parentId;
     private String parent;
@@ -24,10 +22,5 @@ public class ParentTableDto implements CrudDto<Long> {
     private Boolean deleted;
 
     @Builder.Default()
-    List<ChildTableDto> children = new ArrayList<>();
-
-    @Override
-    public Long getId() {
-        return parentId;
-    }    
+    List<NonExtendedChildTableDto> children = new ArrayList<>();
 }

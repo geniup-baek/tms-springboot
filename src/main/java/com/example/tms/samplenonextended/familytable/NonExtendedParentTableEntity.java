@@ -1,4 +1,4 @@
-package com.example.tms.sample.familytable;
+package com.example.tms.samplenonextended.familytable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,26 +6,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import com.example.tms.base.entity.ManagedEntity;
-
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Where;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "sample_parents")
+@Table(name = "sample_nonextended_parents")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted = false")
-public class ParentTableEntity extends ManagedEntity<Long> {
+public class NonExtendedParentTableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,13 +34,16 @@ public class ParentTableEntity extends ManagedEntity<Long> {
     @Column(name = "parent_field", length = 50)
     private String parentField;
 
-    @Override
-    protected void clearId() {
-        this.parentId = null;
-    }
+    @Version
+    private Integer version;
 
-    @Override
-    public Long getId() {
-        return parentId;
+    @Column(name = "deleted", nullable = false)
+    @ColumnDefault("false")
+    private Boolean deleted;    
+
+    public void setForCreate() {
+        this.parentId = null;
+        this.version = null;
+        this.deleted = false;
     }
 }

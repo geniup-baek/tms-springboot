@@ -1,4 +1,4 @@
-package com.example.tms.sample.code;
+package com.example.tms.system.code;
 
 import java.io.Serializable;
 

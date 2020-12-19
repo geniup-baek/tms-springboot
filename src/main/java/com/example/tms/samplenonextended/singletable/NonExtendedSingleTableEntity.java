@@ -1,4 +1,4 @@
-package com.example.tms.sample.singletable;
+package com.example.tms.samplenonextended.singletable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,23 +6,24 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import com.example.tms.base.entity.ManagedEntity;
+import org.hibernate.annotations.ColumnDefault;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "sample_singles")
+@Table(name = "sample_nonextended_singles")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SingleTableEntity extends ManagedEntity<Long> {
+public class NonExtendedSingleTableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,14 +35,16 @@ public class SingleTableEntity extends ManagedEntity<Long> {
     @Column(name = "code_field", length = 50)
     private String codeField;
 
-    @Override
-    protected void clearId() {
+    @Version
+    private Integer version;
+
+    @Column(name = "deleted", nullable = false)
+    @ColumnDefault("false")
+    private Boolean deleted;    
+
+    public void setForCreate() {
         this.singleId = null;
+        this.version = null;
+        this.deleted = false;
     }
-
-    @Override
-    public Long getId() {
-        return singleId;
-    }
-
 }

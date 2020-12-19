@@ -1,16 +1,12 @@
-package com.example.tms.sample.familytable;
-
-import com.example.tms.base.converter.EntityDtoConverter;
+package com.example.tms.samplenonextended.familytable;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class ParentTableConverter
-        implements EntityDtoConverter<ParentTableEntity, ParentTableDto, Long> {
+public class NonExtendedParentTableConverter {
 
-    @Override
-    public ParentTableEntity fromDto(ParentTableDto dto) {
-        return ParentTableEntity.builder()
+    public NonExtendedParentTableEntity fromDto(NonExtendedParentTableDto dto) {
+        return NonExtendedParentTableEntity.builder()
                 .parentId(dto.getParentId())
                 .parentField(dto.getParent())
                 .version(dto.getVersion())
@@ -18,16 +14,14 @@ public class ParentTableConverter
                 .build();
     }
 
-    @Override
-    public ParentTableEntity fromDtoForCreate(ParentTableDto dto) {
-        ParentTableEntity entity = fromDto(dto);
+    public NonExtendedParentTableEntity fromDtoForCreate(NonExtendedParentTableDto dto) {
+        NonExtendedParentTableEntity entity = fromDto(dto);
         entity.setForCreate();
         return entity;
     }
 
-    @Override
-    public ParentTableDto fromEntity(ParentTableEntity entity) {
-        return ParentTableDto.builder()
+    public NonExtendedParentTableDto fromEntity(NonExtendedParentTableEntity entity) {
+        return NonExtendedParentTableDto.builder()
                 .parentId(entity.getParentId())
                 .parent(entity.getParentField())
                 .version(entity.getVersion())
@@ -35,8 +29,7 @@ public class ParentTableConverter
                 .build();
     }
 
-    @Override
-    public void mergeEntity(ParentTableEntity target, ParentTableEntity source) {
+    public void mergeEntity(NonExtendedParentTableEntity target, NonExtendedParentTableEntity source) {
         target.setParentId(source.getParentId());
         target.setParentField(source.getParentField());
         // target.setVersion(source.getVersion()); // merge-ignore

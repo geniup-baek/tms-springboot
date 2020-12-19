@@ -1,4 +1,4 @@
-package com.example.tms.sample.code;
+package com.example.tms.system.code;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "sample_codes")
+@Table(name = "s_codes")
 public class Code {
     
     @EmbeddedId

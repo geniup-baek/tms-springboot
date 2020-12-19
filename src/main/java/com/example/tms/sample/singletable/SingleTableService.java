@@ -2,23 +2,20 @@ package com.example.tms.sample.singletable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.AbstractMap.SimpleEntry;
 
 import javax.persistence.EntityManager;
 
-import com.example.tms.define.Const;
-import com.example.tms.error.ApplicationException;
+import com.example.tms.base.service.CrudService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
-public class SingleTableService {
+public class SingleTableService
+        implements CrudService<SingleTableEntity, SingleTableDto, SingleTableRepository, SingleTableConverter, SingleTableSearchCondition, Long> {
 
     private JPAQueryFactory queryFactory;
 
@@ -33,104 +30,28 @@ public class SingleTableService {
         this.converter = converter;
     }
 
-    @Transactional
-    public SingleTableDto read(Long id) {
-        SingleTableSearchCondition searchCondition = SingleTableSearchCondition.builder().build();
-        searchCondition.setId(id);
-
-        List<SingleTableDto> resultList = search(searchCondition, Integer.MAX_VALUE);
-        if (!resultList.isEmpty()) {
-            return resultList.get(0);
-        }
-
-        return null;
+    @Override
+    public SingleTableSearchCondition getIdSearchCondition(Long id) {
+        return SingleTableSearchCondition.builder().singleTableId(id).build();
     }
 
-    @Transactional
-    public Long create(SingleTableDto dto) {
-
-        SingleTableEntity entity = converter.fromDtoForCreate(dto);
-        SingleTableEntity createdEntity = repository.save(entity);
-
-        return createdEntity.getId();
+    @Override
+    public SingleTableRepository getRepository() {
+        return repository;
     }
 
-    @Transactional
-    public SingleTableDto update(Long id, SingleTableDto dto) {
-
-        SingleTableDto updatedDto = null;
-
-        Optional<SingleTableEntity> optionalEntity = repository.findById(id);
-        if (optionalEntity.isPresent()) {
-            SingleTableEntity entity = optionalEntity.get();
-            if (!entity.getVersion().equals(dto.getVersion())) {
-                throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
-            }
-
-            converter.mergeEntity(entity, converter.fromDto(dto));
-
-            SingleTableEntity updatedEntity = repository.save(entity);
-            updatedDto = converter.fromEntity(updatedEntity);
-        } else {
-            throw new ApplicationException(Const.Message.NOT_FOUND);
-        }
-
-        return updatedDto;
+    @Override
+    public SingleTableConverter getConverter() {
+        return converter;
     }
 
-    @Transactional
-    public void delete(Long id, Integer version) {
-        Optional<SingleTableEntity> optionalEntity = repository.findById(id);
-
-        if (optionalEntity.isPresent()) {
-            SingleTableEntity entity = optionalEntity.get();
-            if (!entity.getVersion().equals(version)) {
-                throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
-            }
-            repository.deleteById(id);
-        } else {
-            throw new ApplicationException(Const.Message.NOT_FOUND);
-        }
-    }
-
-    @Transactional
-    public void deleteLogical(Long id, Integer version) {
-
-        Optional<SingleTableEntity> optionalEntity = repository.findById(id);
-        if (optionalEntity.isPresent()) {
-            SingleTableEntity entity = optionalEntity.get();
-            if (!entity.getVersion().equals(version)) {
-                throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
-            }
-            entity.setDeleted(true);
-            repository.save(entity);
-
-        } else {
-            throw new ApplicationException(Const.Message.NOT_FOUND);
-        }
-    }
-
-    @Transactional
-    public void deleteList(List<SimpleEntry<Long, Integer>> entryList) {
-        for (SimpleEntry<Long, Integer> entry : entryList) {
-            delete(entry.getKey(), entry.getValue());
-        }
-    }
-
-    @Transactional
-    public void deleteListLogical(List<SimpleEntry<Long, Integer>> entryList) {
-        for (SimpleEntry<Long, Integer> entry : entryList) {
-            deleteLogical(entry.getKey(), entry.getValue());
-        }
-    }
-
-    @Transactional
-	public List<SingleTableDto> search(SingleTableSearchCondition searchCondition, int size) {
+    @Override
+	public List<SingleTableDto> search(SingleTableSearchCondition searchCondition, int size, boolean withDetail) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
         if (searchCondition.getId() != null) {
-            builder.and(QSingleTableEntity.singleTableEntity.id.eq(searchCondition.getId()));
+            builder.and(QSingleTableEntity.singleTableEntity.singleId.eq(searchCondition.getId()));
         }
 
         if (StringUtils.hasText(searchCondition.getRequiredString())) {
@@ -153,5 +74,5 @@ public class SingleTableService {
         resultList.stream().forEach(entity -> dtoList.add(converter.fromEntity(entity)));
 
 		return dtoList;
-	}
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.tms.sample.familytable;
+package com.example.tms.samplenonextended.familytable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.AbstractMap.SimpleEntry;
 
 import javax.persistence.EntityManager;
 
-import com.example.tms.base.service.CrudService;
 import com.example.tms.define.Const;
 import com.example.tms.error.ApplicationException;
 import com.querydsl.core.BooleanBuilder;
@@ -19,17 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
-public class FamilyService
-        implements CrudService<ParentTableEntity, ParentTableDto, ParentTableRepository, ParentTableConverter, FamilySearchCondition, Long> {
+public class NonExtendedFamilyService {
 
     private JPAQueryFactory queryFactory;
-    private ParentTableRepository parentRepository;
-    private ChildTableRepository childRepository;
-    private ParentTableConverter parentConverter;
-    private ChildTableConverter childConverter;
+    private NonExtendedParentTableRepository parentRepository;
+    private NonExtendedChildTableRepository childRepository;
+    private NonExtendedParentTableConverter parentConverter;
+    private NonExtendedChildTableConverter childConverter;
 
     @Autowired
-    public FamilyService(EntityManager entityManager, ParentTableRepository parentRepository, ChildTableRepository childRepository, ParentTableConverter parentConverter, ChildTableConverter childConverter) {
+    public NonExtendedFamilyService(EntityManager entityManager, NonExtendedParentTableRepository parentRepository, NonExtendedChildTableRepository childRepository, NonExtendedParentTableConverter parentConverter, NonExtendedChildTableConverter childConverter) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.parentRepository = parentRepository;
         this.childRepository = childRepository;
@@ -37,31 +35,28 @@ public class FamilyService
         this.childConverter = childConverter;
     }
 
-    @Override
-    public FamilySearchCondition getIdSearchCondition(Long id) {
-        return FamilySearchCondition.builder().parentId(id).build();
-    }
-
-    @Override
-    public ParentTableRepository getRepository() {
-        return parentRepository;
-    }
-
-    @Override
-    public ParentTableConverter getConverter() {
-        return parentConverter;
-    }
-
-    @Override
     @Transactional
-    public Long create(ParentTableDto dto) {
+    public NonExtendedParentTableDto read(Long id) {
+        NonExtendedFamilySearchCondition searchCondition = NonExtendedFamilySearchCondition.builder().build();
+        searchCondition.setId(id);
 
-        ParentTableEntity parentEntity = parentConverter.fromDtoForCreate(dto);
-        ParentTableEntity createdParentEntity = parentRepository.save(parentEntity);
+        List<NonExtendedParentTableDto> resultList = search(searchCondition, Integer.MAX_VALUE, true);
+        if (!resultList.isEmpty()) {
+            return resultList.get(0);
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public Long create(NonExtendedParentTableDto dto) {
+
+        NonExtendedParentTableEntity parentEntity = parentConverter.fromDtoForCreate(dto);
+        NonExtendedParentTableEntity createdParentEntity = parentRepository.save(parentEntity);
 
         dto.children.stream().forEach(childDto -> {
 
-            ChildTableEntity childEntity = childConverter.fromDtoForCreate(childDto);
+            NonExtendedChildTableEntity childEntity = childConverter.fromDtoForCreate(childDto);
             childEntity.setForeignkeyParent(createdParentEntity);
 
             childRepository.save(childEntity);
@@ -70,32 +65,31 @@ public class FamilyService
         return createdParentEntity.getParentId();
     }
 
-    @Override
     @Transactional
-    public ParentTableDto update(Long id, ParentTableDto dto) {
+    public NonExtendedParentTableDto update(Long id, NonExtendedParentTableDto dto) {
 
-        ParentTableDto updatedDto = null;
+        NonExtendedParentTableDto updatedDto = null;
 
-        Optional<ParentTableEntity> optionalParentEntity = parentRepository.findById(id);
+        Optional<NonExtendedParentTableEntity> optionalParentEntity = parentRepository.findById(id);
         if (optionalParentEntity.isPresent()) {
-            ParentTableEntity parentEntity = optionalParentEntity.get();
+            NonExtendedParentTableEntity parentEntity = optionalParentEntity.get();
             if (!parentEntity.getVersion().equals(dto.getVersion())) {
                 throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
             }
             parentConverter.mergeEntity(parentEntity, parentConverter.fromDto(dto));
-            ParentTableEntity updatedParentEntity = parentRepository.save(parentEntity);
+            NonExtendedParentTableEntity updatedParentEntity = parentRepository.save(parentEntity);
 
             dto.children.stream().forEach(childDto -> {
                 if (childDto.getExecuteType() != null) {
 
                     if (childDto.getExecuteType().equals("C")) {
-                        ChildTableEntity childEntity = childConverter.fromDtoForCreate(childDto);
+                        NonExtendedChildTableEntity childEntity = childConverter.fromDtoForCreate(childDto);
                         childEntity.setForeignkeyParent(updatedParentEntity);
                         childRepository.save(childEntity);
                     } else if (childDto.getExecuteType().equals("U")) {
-                        Optional<ChildTableEntity> optionalChildEntity = childRepository.findById(childDto.getChildId());
+                        Optional<NonExtendedChildTableEntity> optionalChildEntity = childRepository.findById(childDto.getChildId());
                         if (optionalChildEntity.isPresent()) {
-                            ChildTableEntity childEntity = optionalChildEntity.get();
+                            NonExtendedChildTableEntity childEntity = optionalChildEntity.get();
                             if (!childEntity.getVersion().equals(childDto.getVersion())) {
                                 throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
                             }
@@ -106,9 +100,9 @@ public class FamilyService
                             throw new ApplicationException(Const.Message.NOT_FOUND);
                         }
                     } else if (childDto.getExecuteType().equals("D")) {
-                        Optional<ChildTableEntity> optionalChildEntity = childRepository.findById(childDto.getChildId());
+                        Optional<NonExtendedChildTableEntity> optionalChildEntity = childRepository.findById(childDto.getChildId());
                         if (optionalChildEntity.isPresent()) {
-                            ChildTableEntity childEntity = optionalChildEntity.get();
+                            NonExtendedChildTableEntity childEntity = optionalChildEntity.get();
                             if (!childEntity.getVersion().equals(childDto.getVersion())) {
                                 throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
                             }
@@ -129,13 +123,12 @@ public class FamilyService
         return updatedDto;
     }
 
-    @Override
     @Transactional
     public void delete(Long id, Integer version) {
-        Optional<ParentTableEntity> optionalEntity = parentRepository.findById(id);
+        Optional<NonExtendedParentTableEntity> optionalEntity = parentRepository.findById(id);
 
         if (optionalEntity.isPresent()) {
-            ParentTableEntity entity = optionalEntity.get();
+            NonExtendedParentTableEntity entity = optionalEntity.get();
             if (!entity.getVersion().equals(version)) {
                 throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
             }
@@ -148,13 +141,12 @@ public class FamilyService
         }
     }
 
-    @Override
     @Transactional
     public void deleteLogical(Long id, Integer version) {
 
-        Optional<ParentTableEntity> optionalEntity = parentRepository.findById(id);
+        Optional<NonExtendedParentTableEntity> optionalEntity = parentRepository.findById(id);
         if (optionalEntity.isPresent()) {
-            ParentTableEntity entity = optionalEntity.get();
+            NonExtendedParentTableEntity entity = optionalEntity.get();
             if (!entity.getVersion().equals(version)) {
                 throw new ApplicationException(Const.Message.OPTIMISTIC_LOCK_EXCEPTION);
             }
@@ -172,31 +164,44 @@ public class FamilyService
         }
     }
 
-    @Override
     @Transactional
-	public List<ParentTableDto> search(FamilySearchCondition searchCondition, int size, boolean withDetail) {
+    public void deleteList(List<SimpleEntry<Long, Integer>> entryList) {
+        for (SimpleEntry<Long, Integer> entry : entryList) {
+            delete(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Transactional
+    public void deleteListLogical(List<SimpleEntry<Long, Integer>> entryList) {
+        for (SimpleEntry<Long, Integer> entry : entryList) {
+            deleteLogical(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Transactional
+	public List<NonExtendedParentTableDto> search(NonExtendedFamilySearchCondition searchCondition, int size, boolean withDetail) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
         if (searchCondition.getId() != null) {
-            builder.and(QParentTableEntity.parentTableEntity.parentId.eq(searchCondition.getId()));
+            builder.and(QNonExtendedParentTableEntity.nonExtendedParentTableEntity.parentId.eq(searchCondition.getId()));
         }
 
         if (StringUtils.hasText(searchCondition.getParent())) {
-            builder.and(QParentTableEntity.parentTableEntity.parentField.contains(searchCondition.getParent()));
+            builder.and(QNonExtendedParentTableEntity.nonExtendedParentTableEntity.parentField.contains(searchCondition.getParent()));
         }
 
-        List<ParentTableDto> dtoList = new ArrayList<>();
+        List<NonExtendedParentTableDto> dtoList = new ArrayList<>();
 
-        List<ParentTableEntity> resultList = queryFactory
-                .select(QParentTableEntity.parentTableEntity)
-                .from(QParentTableEntity.parentTableEntity)
+        List<NonExtendedParentTableEntity> resultList = queryFactory
+                .select(QNonExtendedParentTableEntity.nonExtendedParentTableEntity)
+                .from(QNonExtendedParentTableEntity.nonExtendedParentTableEntity)
                 .where(builder)
                 .limit(size)
                 .fetch();
 
         resultList.stream().forEach(parentEntity -> {
-            ParentTableDto dto = parentConverter.fromEntity(parentEntity);
+            NonExtendedParentTableDto dto = parentConverter.fromEntity(parentEntity);
             if (withDetail) {
                 dto.children.addAll(searchChild(parentEntity.getParentId()));
             }
@@ -208,26 +213,24 @@ public class FamilyService
     }
     
     @Transactional
-	public List<ChildTableDto> searchChild(Long parentId) {
+	public List<NonExtendedChildTableDto> searchChild(Long parentId) {
 
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(QChildTableEntity.childTableEntity.foreignkeyParent.parentId.eq(parentId));
+        builder.and(QNonExtendedChildTableEntity.nonExtendedChildTableEntity.foreignkeyParent.parentId.eq(parentId));
 
-        List<ChildTableDto> dtoList = new ArrayList<>();
+        List<NonExtendedChildTableDto> dtoList = new ArrayList<>();
 
-        List<ChildTableEntity> resultList = queryFactory
-                .select(QChildTableEntity.childTableEntity)
-                .from(QChildTableEntity.childTableEntity)
+        List<NonExtendedChildTableEntity> resultList = queryFactory
+                .select(QNonExtendedChildTableEntity.nonExtendedChildTableEntity)
+                .from(QNonExtendedChildTableEntity.nonExtendedChildTableEntity)
                 .where(builder)
                 .fetch();
 
         resultList.stream().forEach(entity -> {
-            ChildTableDto dto = childConverter.fromEntity(entity);
+            NonExtendedChildTableDto dto = childConverter.fromEntity(entity);
             dtoList.add(dto);
         });
 
 		return dtoList;
-	}
-
-
+	}    
 }
