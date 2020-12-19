@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "deleted = false")
 public class ParentTableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
