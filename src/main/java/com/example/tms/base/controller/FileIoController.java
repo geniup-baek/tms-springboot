@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface FileIoController<S extends FileIoService<D, C, ID>, D extends FileIoDto<ID>, C extends BaseSearchCondition<ID>, ID>
         extends BaseController {
 
-    FileIoService<D, C, ID> getFileIoService();
+    S getFileIoService();
 
     Class<C> getSearchControllerType();
 
