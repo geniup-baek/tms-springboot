@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.example.tms.base.entity.ManagedEntity;
+import com.example.tms.utility.converter.annotation.ConvertSourceField;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +30,11 @@ public class SingleTableEntity extends ManagedEntity<Long> {
     private Long singleId;
 
     @Column(name = "required_string_field", nullable = false, length = 50)
+    @ConvertSourceField(name = "requiredString") // DTO field name
     private String requiredStringField;
 
     @Column(name = "code_field", length = 50)
+    @ConvertSourceField(name = "code") // DTO field name
     private String codeField;
 
     @Override

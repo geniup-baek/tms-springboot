@@ -60,8 +60,8 @@ public interface CrudService<E extends ManagedEntity<ID>, D extends CrudDto<ID>,
 
             getConverter().mergeEntity(entity, getConverter().fromDto(dto));
 
-            E updatedEntity = getRepository().save(entity);
-            updatedDto = getConverter().fromEntity(updatedEntity);
+            getRepository().save(entity);
+            updatedDto = read(entity.getId());
         } else {
             throw new ApplicationException(Const.Message.NOT_FOUND);
         }

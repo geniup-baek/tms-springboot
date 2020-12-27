@@ -5,6 +5,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
 import com.example.tms.base.BaseEntity;
+import com.example.tms.utility.converter.annotation.MergeIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import org.hibernate.annotations.ColumnDefault;
 public abstract class ManagedEntity<ID> implements BaseEntity {
     
     @Version
+    @MergeIgnore
     private Integer version;
 
     @Column(name = "deleted", nullable = false)

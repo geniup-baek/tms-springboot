@@ -69,8 +69,9 @@ public class NonExtendedSingleTableService {
 
             converter.mergeEntity(entity, converter.fromDto(dto));
 
-            NonExtendedSingleTableEntity updatedEntity = repository.save(entity);
-            updatedDto = converter.fromEntity(updatedEntity);
+            repository.save(entity);
+            updatedDto = read(entity.getSingleId());
+
         } else {
             throw new ApplicationException(Const.Message.NOT_FOUND);
         }
@@ -104,6 +105,7 @@ public class NonExtendedSingleTableService {
             }
             entity.setDeleted(true);
             repository.save(entity);
+            repository.flush();
 
         } else {
             throw new ApplicationException(Const.Message.NOT_FOUND);

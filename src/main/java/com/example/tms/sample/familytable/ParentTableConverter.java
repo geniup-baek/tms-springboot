@@ -10,12 +10,7 @@ public class ParentTableConverter
 
     @Override
     public ParentTableEntity fromDto(ParentTableDto dto) {
-        return ParentTableEntity.builder()
-                .parentId(dto.getParentId())
-                .parentField(dto.getParent())
-                .version(dto.getVersion())
-                .deleted(dto.getDeleted())
-                .build();
+        return EntityDtoConverter.super.fromDto(dto, ParentTableEntity.class);
     }
 
     @Override
@@ -27,19 +22,6 @@ public class ParentTableConverter
 
     @Override
     public ParentTableDto fromEntity(ParentTableEntity entity) {
-        return ParentTableDto.builder()
-                .parentId(entity.getParentId())
-                .parent(entity.getParentField())
-                .version(entity.getVersion())
-                .deleted(entity.getDeleted())
-                .build();
-    }
-
-    @Override
-    public void mergeEntity(ParentTableEntity target, ParentTableEntity source) {
-        target.setParentId(source.getParentId());
-        target.setParentField(source.getParentField());
-        // target.setVersion(source.getVersion()); // merge-ignore
-        target.setDeleted(source.getDeleted());
+        return EntityDtoConverter.super.fromEntity(entity, ParentTableDto.class);
     }
 }

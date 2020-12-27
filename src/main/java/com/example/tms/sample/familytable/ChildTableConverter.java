@@ -10,14 +10,9 @@ public class ChildTableConverter
 
     @Override
     public ChildTableEntity fromDto(ChildTableDto dto) {
-        return ChildTableEntity.builder()
-                .childId(dto.getChildId())
-                .nonForeignkeyParentId(dto.getNonForeignkeyParentId())
-                // .foreignkeyParent(foreignkeyParent) // set outside
-                .childField(dto.getChild())
-                .version(dto.getVersion())
-                .deleted(dto.getDeleted())
-                .build();
+        return EntityDtoConverter.super.fromDto(dto, ChildTableEntity.class);
+        // TODO: extract to Base
+        // .foreignkeyParent(foreignkeyParent) // set outside
     }
 
     @Override
@@ -30,14 +25,9 @@ public class ChildTableConverter
     @Override
     public ChildTableDto fromEntity(ChildTableEntity entity) {
 
-        ChildTableDto dto = ChildTableDto.builder()
-                .childId(entity.getChildId())
-                .nonForeignkeyParentId(entity.getNonForeignkeyParentId())
-                .child(entity.getChildField())
-                .version(entity.getVersion())
-                .deleted(entity.getDeleted())
-                .build();
+        ChildTableDto dto = EntityDtoConverter.super.fromEntity(entity, ChildTableDto.class);
 
+        // TODO: extract to Base
         if (entity.getNonForeignkeyParent() != null) {
             dto.setNonForeignkeyParentParentField(entity.getNonForeignkeyParent().getParentField());
         }                
@@ -47,15 +37,5 @@ public class ChildTableConverter
         }                
 
         return dto;
-    }
-
-    @Override
-    public void mergeEntity(ChildTableEntity target, ChildTableEntity source) {
-        target.setChildId(source.getChildId());
-        target.setChildField(source.getChildField());
-        target.setNonForeignkeyParentId(source.getNonForeignkeyParentId());
-        // target.setForeignkeyParent(source.getForeignkeyParent) // set outside
-        // target.setVersion(source.getVersion()); // merge-ignore
-        target.setDeleted(source.getDeleted());
     }
 }

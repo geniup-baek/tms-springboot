@@ -10,13 +10,7 @@ public class SingleTableConverter
 
     @Override
     public SingleTableEntity fromDto(SingleTableDto dto) {
-        return SingleTableEntity.builder()
-                .singleId(dto.getSingleId())
-                .requiredStringField(dto.getRequiredString())
-                .codeField(dto.getCode())
-                .version(dto.getVersion())
-                .deleted(dto.getDeleted())
-                .build();
+        return EntityDtoConverter.super.fromDto(dto, SingleTableEntity.class);
     }
 
     @Override
@@ -28,22 +22,6 @@ public class SingleTableConverter
 
     @Override
     public SingleTableDto fromEntity(SingleTableEntity entity) {
-        return SingleTableDto.builder()
-                .singleId(entity.getSingleId())
-                .requiredString(entity.getRequiredStringField())
-                .code(entity.getCodeField())
-                .name(null) // none-entity-field
-                .version(entity.getVersion())
-                .deleted(entity.getDeleted())
-                .build();
-    }
-
-    @Override
-    public void mergeEntity(SingleTableEntity target, SingleTableEntity source) {
-        target.setSingleId(source.getSingleId());
-        target.setRequiredStringField(source.getRequiredStringField());
-        target.setCodeField(source.getCodeField());
-        // target.setVersion(source.getVersion()); // merge-ignore
-        target.setDeleted(source.getDeleted());
+        return EntityDtoConverter.super.fromEntity(entity, SingleTableDto.class);
     }
 }
